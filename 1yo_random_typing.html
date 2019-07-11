@@ -1,0 +1,100 @@
+<html>
+<title>ランダムなキータイプで遊べるおもちゃ</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<head>
+</head>
+
+<body style="overflow: hidden;">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script>
+        const anpanman_urls = [
+            'http://jibunhack.sakura.ne.jp/wp2/wp-content/uploads/2013/10/anpanman01s.gif',
+            'https://www.anpanman.jp/about/friends/images/4zvqlpab9ixejb6d_image.gif',
+            'https://www.anpanman.jp/about/friends/images/ig9of5oo4t52n8r2_image.gif'
+        ];
+        const pastel_colors = ['#ff7f7f', '#ff7fbf', '#ff7fff', '#bf7fff', '#7f7fff', '#7fbfff', '#7fffff', '#7fffbf', '#7fff7f', '#bfff7f', '#ffff7f', '#ffbf7f'];
+        const shapes = {
+            circle: '<div class="shape circle" style="width: %size%px;height: %size%px;border-radius:50%;background: %color%;" />',
+            rectangle: '<div class="shape rectangle" style="width: %size%px;height: %size%px;background: %color%;" />',
+            triangle: '<div class="shape triangle" style="border-color: transparent transparent %color% transparent;border-style: solid;border-width: 0 calc(%size%px / 2) calc(%size%px * 1.7320508 / 2) calc(%size%px / 2);height: 0;width: 0;" />'
+        };
+
+        const objectDrawer = {};
+        objectDrawer.drawShapeWithDom = function (shape, size, color, position_x, position_y) {
+            let obj = $(shapes[shape].replace(/%color%/g, color).replace(/%size%/g, size))
+                .css('left', 'calc(' + position_x + '% - ' + size / 2 + 'px)')
+                .css('top', 'calc(' + position_y + '% - ' + size / 2 + 'px)')
+                .css('position', 'absolute')
+                .appendTo($('body'))
+                .show()
+                .fadeOut(3000);
+            window.setTimeout(() => obj.remove(), 3000);
+        };
+        objectDrawer.drawAnpanman = function () {
+            let anpanman_url = anpanman_urls[Math.floor(Math.random() * anpanman_urls.length)];
+            $('.anpanman_img,.shape').remove();
+
+            let obj = $('<img class="anpanman_img" src="' + anpanman_url + '" />')
+                .css('margin', 'auto')
+                .css('position', 'absolute')
+                .css('max-width', '100%')
+                .css('max-height', '100%')
+                .css('bottom', '0')
+                .css('left', '0')
+                .css('right', '0')
+                .css('top', '0')
+                .appendTo($('body'))
+                .show()
+                .fadeOut(5000);
+            window.setTimeout(() => obj.remove(), 5000);
+        };
+        objectDrawer.drawRandomShape = function () {
+            let color = pastel_colors[Math.floor(Math.random() * pastel_colors.length)];
+            let top = Math.random() * 100;
+            let left = Math.random() * 100;
+            let size = Math.random() * 450 + 50;
+            let shape = Object.keys(shapes)[Math.floor(Math.random() * Object.keys(shapes).length)];
+            objectDrawer.drawShapeWithDom(shape, size, color, left, top);
+        };
+        objectDrawer.drawRandomShapes = function (number) {
+            number = Number(number);
+            let color = pastel_colors[Math.floor(Math.random() * pastel_colors.length)];
+            let size = Math.random() * 500;
+            let shape = Object.keys(shapes)[Math.floor(Math.random() * Object.keys(shapes).length)];
+            for (let i = 0; i < number; i++) {
+                let top = Math.random() * 100;
+                let left = Math.random() * 100;
+                objectDrawer.drawShapeWithDom(shape, size, color, left, top);
+            }
+        };
+
+        let keyIsBeignPressed = false;
+        window.onkeypress = function (e) {
+            if (keyIsBeignPressed) {
+                return;
+            } else {
+                keyIsBeignPressed = true;
+            }
+            switch (e.code) {
+                case 'Enter':
+                case 'Space':
+                    objectDrawer.drawAnpanman();
+                    break;
+                default:
+                    if (/Digit|Numpad/.test(e.code)) {
+                        objectDrawer.drawRandomShapes(e.code.replace(/Digit|Numpad/, ''));
+                    } else {
+                        objectDrawer.drawRandomShape();
+                    }
+            }
+            console.log(e.code);
+        };
+        window.onkeyup = function (e) {
+            keyIsBeignPressed = false;
+        };
+
+    </script>
+</body>
+
+</html>
