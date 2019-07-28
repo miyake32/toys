@@ -49,12 +49,19 @@
                 .fadeOut(5000);
             window.setTimeout(() => obj.remove(), 5000);
         };
-        objectDrawer.drawRandomShape = function () {
-            let color = pastel_colors[Math.floor(Math.random() * pastel_colors.length)];
-            let top = Math.random() * 100;
-            let left = Math.random() * 100;
-            let size = Math.random() * 450 + 50;
-            let shape = Object.keys(shapes)[Math.floor(Math.random() * Object.keys(shapes).length)];
+        objectDrawer.drawRandomShape = function (position_x, position_y) {
+            let top;
+            let left;
+            if (position_x === undefined || position_y === undefined) {
+                top = Math.random() * 100;
+                left = Math.random() * 100;
+            } else {
+                top = position_y / window.parent.screen.height * 100;
+                left = position_x / window.parent.screen.width * 100;
+            }
+            const color = pastel_colors[Math.floor(Math.random() * pastel_colors.length)];
+            const size = Math.random() * 450 + 50;
+            const shape = Object.keys(shapes)[Math.floor(Math.random() * Object.keys(shapes).length)];
             objectDrawer.drawShapeWithDom(shape, size, color, left, top);
         };
         objectDrawer.drawRandomShapes = function (number) {
@@ -69,12 +76,12 @@
             }
         };
 
-        let keyIsBeignPressed = false;
-        window.onkeypress = function (e) {
-            if (keyIsBeignPressed) {
+        const keyStatus = {};
+        window.onkeydown = function (e) {
+            if (keyStatus[e.code]) {
                 return;
             } else {
-                keyIsBeignPressed = true;
+                keyStatus[e.code] = true;
             }
             switch (e.code) {
                 case 'Enter':
@@ -89,9 +96,20 @@
                     }
             }
             console.log(e.code);
+            e.preventDefault();
+            e.stopPropagation();
         };
         window.onkeyup = function (e) {
-            keyIsBeignPressed = false;
+            keyStatus[e.code] = false;
+        };
+        window.oncontextmenu = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+        window.onclick = function (e) {
+            objectDrawer.drawRandomShape(e.x, e.y);
+            e.preventDefault();
+            e.stopPropagation();
         };
 
     </script>
